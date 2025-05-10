@@ -1,64 +1,126 @@
-# Betting Site Development
+# Gamba v2 - EVM Wallet Integration
 
-Welcome to the Betting Site Development repository. This project aims to create a cutting-edge online betting platform that operates seamlessly across multiple blockchains, including Solana, Ethereum, and BNB.
+A decentralized Web3 casino platform originally built for the Solana blockchain, now extended to support EVM-compatible wallets such as MetaMask, WalletConnect, and Coinbase Wallet.
 
-## Getting Started
+---
 
-- Installing Dependecies:
- npm install --legacy-peer-deps
-- Running project:
- npm run start
- npm run dev
+## ✅ Implemented Features
 
-## Table of Contents
-- [Overview](#overview)
-- [Current Functionality](#current-functionality)
-- [Expansion Requirements](#expansion-requirements)
-- [Games](#games)
-- [Wallet Integration](#wallet-integration)
-- [Security and Transactions](#security-and-transactions)
-- [Performance and Scalability](#performance-and-scalability)
-- [Getting Started](#getting-started)
-- [Contributing](#contributing)
-- [License](#license)
+- **EVM Wallet Integration**
+  - Integrated `@rainbow-me/rainbowkit` and `wagmi` to support major EVM wallets.
+  - Added an EVM provider wrapping the app for context.
+  - New `ConnectButton` component displayed in the header.
 
-## Overview
+- **Solana Compatibility Maintained**
+  - Original support for Solana wallets (`@solana/wallet-adapter-*`) remains fully functional.
 
-Our platform is an online betting site that offers a variety of games, including Dice, Slots, Flip, and others. Users can connect their wallets to participate in these games, place bets, and manage their funds directly through the site.
+- **Resolved Critical Compatibility Issues**
+  - Downgraded `wagmi` to `0.9.6` and `ethers` to `5.8.0` for RainbowKit v0.8.1 compatibility.
+  - Adjusted imports and Vite bundling issues with deep module resolution.
 
-## Current Functionality
+---
 
-- Integration with the Solana blockchain.
-- Users can connect their Phantom wallet to interact with the platform.
-- Users can play Dice, Slots, Flip, and other betting games using their connected wallet.
-- The platform processes bets and payouts securely on the Solana blockchain.
+## 🗂️ Modified and Added Files
 
-## Expansion Requirements
+```
+src/
+├── providers/
+│   └── EvmWalletProvider.tsx       // EVM wallet provider with wagmi + rainbowkit
+├── sections/
+│   ├── Header.tsx                  // Modified to include EvmWalletConnect button
+│   └── EvmWalletConnect.tsx       // Created ConnectButton component
+└── index.tsx                       // Wrapped App with EvmWalletProvider
+```
 
-We are expanding the functionality to also work on the Ethereum and BNB chains. The requirements include:
+---
 
-1. **Multi-Chain Support**: Extend support to include Ethereum and BNB chains in addition to Solana.
-2. **Wallet Integration**: Add support for MetaMask wallet to enable users to connect using Ethereum and BNB, while maintaining the current Phantom wallet connectivity for Solana users.
-3. **Cross-Chain Compatibility**: Ensure that the betting functionalities work seamlessly across Solana, Ethereum, and BNB chains.
+## 🚀 Getting Started
 
-## Games
+### Prerequisites
 
-- **Dice**: A classic betting game where users bet on the outcome of dice rolls.
-- **Slots**: A slot machine game where users spin to match symbols for a payout.
-- **Flip**: A coin flip game where users bet on the outcome of a coin toss.
-- **Other Games**: Additional betting games providing various betting experiences.
+- Node.js >= 20.17.0
+- npm >= 9.x
+- Phantom wallet (Solana)
+- MetaMask wallet (EVM)
 
-## Wallet Integration
+### Setup
 
-- **Phantom Wallet**: Currently integrated for Solana users.
-- **MetaMask Wallet**: To be integrated for Ethereum and BNB users.
+```bash
+npm install --legacy-peer-deps
+npm run dev
+```
 
-## Security and Transactions
+- App: [http://localhost:4001](http://localhost:4001)
 
-- Ensure secure processing of bets and payouts on all supported blockchains.
-- Implement robust security measures to protect user funds and data.
+---
 
-## Performance and Scalability
+## ⚠️ Known Issues
 
-- Optimize the platform for high performance and scalability to handle a large number of users and transactions across multiple blockchains.
+- **Package Conflicts**: 
+  - RainbowKit 0.8.1 requires older versions of `wagmi` and `ethers`.
+  - Installing newer versions will break compatibility without a full refactor.
 
+- **Architecture Issues**:
+  - No shared abstraction for wallet logic (EVM vs. Solana).
+  - Providers are hardcoded and scoped inconsistently.
+  - Folder structure is not layered or modular.
+
+---
+
+## 🛠️ Recommended Refactor
+
+### 1. Restructure the Project
+
+```
+src/
+├── app/                      // Root layout and global providers
+├── chains/
+│   ├── solana/               // Solana-specific context/provider
+│   └── evm/                  // EVM-specific context/provider
+├── components/               // UI components
+├── hooks/                    // useWallet, useChainId, etc.
+├── utils/                    // helper functions
+└── index.tsx
+```
+
+### 2. Abstract Wallet Interface
+
+Create a shared hook like:
+
+```ts
+const { connect, disconnect, isConnected, address, chainId } = useWallet()
+```
+
+Supporting both Solana and EVM chains dynamically.
+
+### 3. Upgrade Packages (when refactoring)
+
+| Package    | Suggested Version |
+|------------|------------------|
+| wagmi      | 1.3.x or higher  |
+| ethers     | Replace with `viem` |
+| rainbowkit | 2.0+             |
+| vite       | 5.x              |
+
+Use `vite-tsconfig-paths` plugin to resolve custom paths easily.
+
+---
+
+## 📸 Screenshot
+
+### ![EVM Wallet Connected]
+
+[![result-Gamepit.png](https://i.postimg.cc/BvyR8mPM/result-Gamepit.png)](https://postimg.cc/JyNpvcqk)
+
+---
+
+## 👨‍💻 Author
+
+- Developer: Gilly Lopes
+- Date: May 10, 2025
+
+---
+
+## 📄 License
+
+MIT
